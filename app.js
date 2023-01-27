@@ -26,7 +26,7 @@ const Product = new mongoose.model("Product", productSchema);
 // Create Product
 app.post("/api/v1/product/new", async (req, res) => {
   const product = await Product.create(req.body);
-  res.status(200).json({
+  res.status(201).json({
     success: true,
     product,
   });
@@ -45,6 +45,13 @@ app.get("/api/v1/products", async (req, res) => {
 app.put("/api/v1/product/:id", async (req, res) => {
   let product = await Product.findById(req.params.id);
 
+  if (!product) {
+    return res.status(500).json({
+      success: true,
+      message: "Product not found",
+    });
+  }
+
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     useFindAndModify: false,
@@ -57,7 +64,24 @@ app.put("/api/v1/product/:id", async (req, res) => {
   });
 });
 
+// Delete Product
+app.delete("/api/v1/product/:id", async (req, res) => {
+  const product = await Product.findById(req.params.id);
 
+  if (!product) {
+    return res.status(500).json({
+      success: true,
+      message: "Product not found",
+    });
+  }
+
+  await product.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "Product Deleted Succesfullly",
+  });
+});
 
 app.listen(3000, () => {
   console.log("Server Running on PORT 3000");
