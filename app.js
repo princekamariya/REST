@@ -41,6 +41,22 @@ app.get("/api/v1/products", async (req, res) => {
   });
 });
 
+// Update Product
+app.put("/api/v1/product/:id", async (req, res) => {
+  let product = await Product.findById(req.params.id);
+
+  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    useFindAndModify: false,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server Running on PORT 3000");
 });
